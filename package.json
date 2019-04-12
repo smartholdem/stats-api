@@ -1,5 +1,5 @@
 {
-  "name": "SmartHoldem Stats API",
+  "name": "stats-api",
   "version": "0.1.0",
   "description": "SmartHoldem Stats API",
   "main": "index.js",
