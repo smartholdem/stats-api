@@ -7,5 +7,7 @@ export default class IndexRoute {
 			.get(indexController.index);
 		app.route('/msg')
 			.get(indexController.msg);
+		app.route('/block')
+			.get(indexController.getBlock);
 	}
 }
