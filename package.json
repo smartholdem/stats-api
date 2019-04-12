@@ -42,7 +42,8 @@
     "negotiator": "^0.6.1",
     "pug": "^2.0.3",
     "serve-favicon": "^2.5.0",
-    "socket.io": "^2.2.0"
+    "socket.io": "^2.2.0",
+    "sthjs-wrapper": "^0.1.8"
   },
   "devDependencies": {
     "@types/chai": "^4.1.3",
