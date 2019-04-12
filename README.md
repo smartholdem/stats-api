@@ -1,2 +1,2 @@
-# stats-api
-SmartHoldem statistics service api
+# SmartHoldem statistic api
+
