@@ -11,7 +11,7 @@
     "test": "mocha -r ts-node/register -w ./spec/**/*.spec.ts",
     "build": "tsc -p src",
     "start": "node dist/index.js",
-    "build:docker": "docker build -t rjmacarthy/express-typescript-starter .",
+    "build:docker": "docker build -t rjmacarthy/stats-api .",
     "docker:compose": "docker-compose up"
   },
   "repository": {
