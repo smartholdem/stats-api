@@ -9,5 +9,7 @@ export default class IndexRoute {
             .get(indexController.getTxTotal);
 		app.route('/tx')
 			.get(indexController.getTxList);
+		app.route('/data/:from/:to')
+			.get(indexController.getDb);
 	}
 }
