@@ -93,10 +93,6 @@ export default class IndexController {
         res.render('index', {title: 'SmartHoldem Stats'});
     }
 
-    public msg(req: Request, res: Response): void {
-        res.json({msg: 'Hello!'});
-    }
-
     public getTxTotal(req: Request, res: Response): void {
         let parameters = {
             "limit": 1,
