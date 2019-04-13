@@ -27,7 +27,7 @@ let options = {
 let counters = {
     txDay: 0,
     amountDay: 0,
-    addresses: 0
+    addrsDay: 0
 };
 
 // async function always returns a Promise
