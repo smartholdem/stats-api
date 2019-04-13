@@ -51,6 +51,7 @@ async function syncInit(): Promise<void> {
                 dayKey = ymd;
                 counters.txDay = 0;
                 counters.amountDay = 0;
+                counters.addrsDay = 0;
             }
 
             // verif addr
@@ -63,16 +64,16 @@ async function syncInit(): Promise<void> {
             });
 
             counters.txDay++;
-            counters.amountDay = counters.amountDay + (response.transactions[i].amount / 10 ** 8)
+            counters.amountDay = counters.amountDay + (response.transactions[i].amount / 10 ** 8);
 
             console.log(date);
             console.log(ymd);
 
-            db.put('0x100' + dayKey, {
+            db.put('100x' + dayKey, {
                 count: counters.txDay
             });
 
-            db.put('0x200' + dayKey, {
+            db.put('200x' + dayKey, {
                 amount: counters.amountDay
             });
 
