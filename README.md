@@ -14,3 +14,5 @@ This module interacts with the game client SmartHoldem Platform.
   }
 }
 ```
+
+GET `/amount/20171217/2018117`
