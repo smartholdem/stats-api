@@ -67,7 +67,7 @@ async function syncInit(): Promise<void> {
             counters.amountDay = counters.amountDay + (response.transactions[i].amount / 10 ** 8);
 
             console.log(date);
-            console.log(ymd);
+            //console.log(ymd);
 
             db.put('100x' + dayKey, {
                 count: counters.txDay
@@ -95,17 +95,6 @@ export default class IndexController {
 
     public msg(req: Request, res: Response): void {
         res.json({msg: 'Hello!'});
-    }
-
-    public getBlock(req: Request, res: Response): void {
-        let parameters = {
-            "limit": 10,
-            "offset": 0,
-            "orderBy": "height:asc"
-        };
-        smartholdemApi.getBlocks(parameters, (error, success, response) => {
-            res.json(response);
-        });
     }
 
     public getTxTotal(req: Request, res: Response): void {
