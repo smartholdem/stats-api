@@ -11,5 +11,7 @@ export default class IndexRoute {
 			.get(indexController.getBlock);
         app.route('/tx-total')
             .get(indexController.getTxTotal);
+		app.route('/tx')
+			.get(indexController.getTxList);
 	}
 }
