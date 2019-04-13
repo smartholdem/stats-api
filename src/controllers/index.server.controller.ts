@@ -57,6 +57,7 @@ async function syncInit(): Promise<void> {
                 db.get('500x' + response.transactions[i].recipientId, function (err, value) {
                     if (err) {
                         totalAddresses++;
+                        counters.addrsDay++;
                         db.put('0x1', {
                             addresses: totalAddresses
                         });
@@ -87,7 +88,6 @@ async function syncInit(): Promise<void> {
                 tx: response.count
             });
 
-            // console.log(totalAddresses);
         });
     });
 
