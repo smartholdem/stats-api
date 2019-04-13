@@ -9,8 +9,8 @@ const db = level('.db', {valueEncoding: 'json'});
 smartholdemApi.setPreferredNode("192.168.1.55");
 smartholdemApi.init("main"); //main or dev
 
-// 0x - total tx count
-// 1x - uniq addresses
+// 0x - total tx count, uniq addresses count
+// 1x - list uniq addresses
 // 100x - tx count by day
 // 200x - amount transfer by day
 // 300x - price by day
@@ -18,6 +18,7 @@ smartholdemApi.init("main"); //main or dev
 
 const timeStart = 1511269200;
 let dayKey = '20171121';
+let totalAddresses = 0;
 
 let options = {
     txOffset: 0,
@@ -57,6 +58,7 @@ async function syncInit(): Promise<void> {
             // verif addr
             db.get('1x' + response.transactions[i].recipientId, function (err, value) {
                 if (err) {
+                    totalAddresses++;
                     db.put('1x' + response.transactions[i].recipientId, {
                         timestamp: response.transactions[i].timestamp
                     })
@@ -82,7 +84,8 @@ async function syncInit(): Promise<void> {
 
         // save totalTxs
         db.put('0x0', {
-            count: response.count
+            tx: response.count,
+            addresses: totalAddresses
         });
     });
 
@@ -94,6 +97,7 @@ export default class IndexController {
     }
 
     public getTxTotal(req: Request, res: Response): void {
+        console.log(req);
         let parameters = {
             "limit": 1,
             "offset": 0
@@ -101,6 +105,20 @@ export default class IndexController {
         smartholdemApi.getTransactionsList(parameters, (error, success, response) => {
             res.json({count: response.count});
         });
+    }
+
+    public getDb(req: Request, res: Response): void {
+        let list = {};
+        db.createReadStream({gte: req.params["from"] + "x", lt: req.params["to"] + "x", limit: 10000})
+            .on('data', function (data) {
+                list[data.key] = data.value;
+            })
+            .on('error', function (err) {
+                res.json(err);
+            })
+            .on('end', function () {
+                res.json(list);
+            });
     }
 
     public getTxList(req: Request, res: Response): void {
