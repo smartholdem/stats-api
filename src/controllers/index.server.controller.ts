@@ -34,7 +34,7 @@ async function syncInit(): Promise<void> {
         addrsDay: 0
     };
 
-    scheduler.scheduleJob("*/5 * * * * *", () => {
+    scheduler.scheduleJob("*/6 * * * * *", () => {
         let parameters = {
             "limit": options.txLimit,
             "offset": options.txOffset,
@@ -92,6 +92,8 @@ async function syncInit(): Promise<void> {
                 db.put('0x0', {
                     tx: response.count
                 });
+            } else {
+                console.log('err', error);
             }
         });
     });
