@@ -54,17 +54,16 @@ async function syncInit(): Promise<void> {
                     counters.amountDay = 0;
                 }
 
-                db.get('1x' + req.params["hash"], function (err, value) {
-                    if (!err) {
-                        res.json(value)
-                    } else {
-                        res.json({
-                            err: true
+                // verif addr
+                db.get('1x' + response.transactions[i].recipientId, function (err, value) {
+                    if (err) {
+                        db.put('1x' + response.transactions[i].recipientId, {
+                            timestamp: response.transactions[i].timestamp
                         })
                     }
                 });
 
-                counters.txDay = counters.txDay + response.blocks[i].numberOfTransactions;
+                counters.txDay++;
                 counters.amountDay = counters.amountDay + (response.blocks[i].totalAmount / 10 ** 8)
 
                 console.log(date);
@@ -80,7 +79,6 @@ async function syncInit(): Promise<void> {
             }
         }
         options.txOffset = options.txOffset + options.txLimit;
-        console.log(response);
 
         // save totalTxs
         db.put('0x0', {
