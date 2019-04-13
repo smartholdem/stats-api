@@ -11,5 +11,7 @@ export default class IndexRoute {
 			.get(indexController.getTxList);
 		app.route('/data/:from/:to')
 			.get(indexController.getDb);
+		app.route('/amount/:from/:to')
+			.get(indexController.getDb);
 	}
 }

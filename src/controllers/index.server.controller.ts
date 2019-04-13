@@ -24,7 +24,7 @@ async function syncInit(): Promise<void> {
     let totalAddresses = 0;
 
     let options = {
-        txOffset: 0,
+        txOffset: 9750,
         txLimit: 50,
     };
 
@@ -42,7 +42,7 @@ async function syncInit(): Promise<void> {
         };
 
         smartholdemApi.getTransactionsList(parameters, (error, success, response) => {
-            if (success && response.success) {
+            if (success && response.success === true) {
                 for (let i = 0; i < response.transactions.length; i++) {
                     let date = new Date((timeStart + response.transactions[i].timestamp) * 1000);
                     let ymd = date.getFullYear().toString() + (date.getMonth() + 1).toString() + date.getDate().toString();
@@ -87,6 +87,7 @@ async function syncInit(): Promise<void> {
 
                 }
                 options.txOffset = options.txOffset + options.txLimit;
+                console.log('offset', options.txOffset);
 
                 // save totalTxs
                 db.put('0x0', {
@@ -118,9 +119,36 @@ export default class IndexController {
 
     public getDb(req: Request, res: Response): void {
         let list = {};
-        db.createReadStream({gte: req.params["from"] + "x", lt: req.params["to"] + "x", limit: 10000})
+        let path = {
+            gte: req.params["from"] + "x",
+            lt: req.params["to"] + "x",
+            limit: 5000
+        };
+        db.createReadStream(path)
             .on('data', function (data) {
                 list[data.key] = data.value;
+            })
+            .on('error', function (err) {
+                res.json(err);
+            })
+            .on('end', function () {
+                res.json(list);
+            });
+    }
+
+    public getAmoutByDay(req: Request, res: Response): void {
+        let list = [];
+        let path = {
+            gte: "400x" + req.params["from"],
+            lt: "400x" + req.params["to"],
+            limit: 5000
+        };
+        db.createReadStream(path)
+            .on('data', function (data) {
+                list.push({
+                    value: data.value.amount,
+                    y: (req.params["from"]).substr(0,4)
+                });
             })
             .on('error', function (err) {
                 res.json(err);
