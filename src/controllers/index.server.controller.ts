@@ -34,7 +34,7 @@ async function syncInit(): Promise<void> {
         addrsDay: 0
     };
 
-    await scheduler.scheduleJob("*/5 * * * * *", () => {
+    scheduler.scheduleJob("*/5 * * * * *", () => {
         let parameters = {
             "limit": options.txLimit,
             "offset": options.txOffset,
