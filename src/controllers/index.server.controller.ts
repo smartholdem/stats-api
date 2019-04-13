@@ -9,12 +9,12 @@ const db = level('.db', {valueEncoding: 'json'});
 smartholdemApi.setPreferredNode("192.168.1.55");
 smartholdemApi.init("main"); //main or dev
 
-// 0x0 - total tx count
-// 0x1 - uniq addresses
-// 0x100 - tx count by day
-// 0x200 - amount transfer by day
-// 0x300 - price by day
-// 0x400 - addresses by day
+// 0x - total tx count
+// 1x - uniq addresses
+// 100x - tx count by day
+// 200x - amount transfer by day
+// 300x - price by day
+// 400x - addresses by day
 
 const timeStart = 1511269200;
 let dayKey = '20171121';
@@ -53,6 +53,16 @@ async function syncInit(): Promise<void> {
                     counters.txDay = 0;
                     counters.amountDay = 0;
                 }
+
+                db.get('1x' + req.params["hash"], function (err, value) {
+                    if (!err) {
+                        res.json(value)
+                    } else {
+                        res.json({
+                            err: true
+                        })
+                    }
+                });
 
                 counters.txDay = counters.txDay + response.blocks[i].numberOfTransactions;
                 counters.amountDay = counters.amountDay + (response.blocks[i].totalAmount / 10 ** 8)
