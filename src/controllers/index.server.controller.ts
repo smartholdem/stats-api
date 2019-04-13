@@ -35,62 +35,60 @@ async function syncInit(): Promise<void> {
     };
 
     await scheduler.scheduleJob("*/5 * * * * *", () => {
+        let parameters = {
+            "limit": options.txLimit,
+            "offset": options.txOffset,
+            "orderBy": "height:asc"
+        };
 
-    });
+        smartholdemApi.getTransactionsList(parameters, (error, success, response) => {
+            for (let i = 0; i < response.transactions.length; i++) {
+                let date = new Date((timeStart + response.transactions[i].timestamp) * 1000);
+                let ymd = date.getFullYear().toString() + (date.getMonth() + 1).toString() + date.getDate().toString();
 
-    let parameters = {
-        "limit": options.txLimit,
-        "offset": options.txOffset,
-        "orderBy": "height:asc"
-    };
-
-    smartholdemApi.getTransactionsList(parameters, (error, success, response) => {
-        for (let i = 0; i < response.transactions.length; i++) {
-            let date = new Date((timeStart + response.transactions[i].timestamp) * 1000);
-            let ymd = date.getFullYear().toString() + (date.getMonth() + 1).toString() + date.getDate().toString();
-
-            if (dayKey !== ymd) {
-                dayKey = ymd;
-                counters.txDay = 0;
-                counters.amountDay = 0;
-                counters.addrsDay = 0;
-            }
-
-            // verif addr
-            db.get('500x' + response.transactions[i].recipientId, function (err, value) {
-                if (err) {
-                    totalAddresses++;
-                    db.put('0x1', {
-                        addresses: totalAddresses
-                    });
-                    console.log('totalAddresses',totalAddresses);
-                    db.put('1x' + response.transactions[i].recipientId, {
-                        timestamp: response.transactions[i].timestamp
-                    })
+                if (dayKey !== ymd) {
+                    dayKey = ymd;
+                    counters.txDay = 0;
+                    counters.amountDay = 0;
+                    counters.addrsDay = 0;
                 }
+
+                // verif addr
+                db.get('500x' + response.transactions[i].recipientId, function (err, value) {
+                    if (err) {
+                        totalAddresses++;
+                        db.put('0x1', {
+                            addresses: totalAddresses
+                        });
+                        // console.log('totalAddresses',totalAddresses);
+                        db.put('500x' + response.transactions[i].recipientId, {
+                            timestamp: response.transactions[i].timestamp
+                        })
+                    }
+                });
+
+                counters.txDay++;
+                counters.amountDay = counters.amountDay + (response.transactions[i].amount / 10 ** 8);
+                // console.log(date);
+
+                db.put('100x' + dayKey, {
+                    tx: counters.txDay
+                });
+
+                db.put('200x' + dayKey, {
+                    amount: counters.amountDay
+                });
+
+            }
+            options.txOffset = options.txOffset + options.txLimit;
+
+            // save totalTxs
+            db.put('0x0', {
+                tx: response.count
             });
 
-            counters.txDay++;
-            counters.amountDay = counters.amountDay + (response.transactions[i].amount / 10 ** 8);
-            console.log(date);
-
-            db.put('100x' + dayKey, {
-                count: counters.txDay
-            });
-
-            db.put('200x' + dayKey, {
-                amount: counters.amountDay
-            });
-
-        }
-        options.txOffset = options.txOffset + options.txLimit;
-
-        // save totalTxs
-        db.put('0x0', {
-            tx: response.count
+            // console.log(totalAddresses);
         });
-
-        console.log(totalAddresses);
     });
 
 }
