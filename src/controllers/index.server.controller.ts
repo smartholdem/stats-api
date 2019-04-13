@@ -14,38 +14,71 @@ smartholdemApi.init("main"); //main or dev
 // 0x100 - tx count by day
 // 0x200 - amount transfer by day
 // 0x300 - price by day
+// 0x400 - addresses by day
 
-let timeStart = 1511269200;
+const timeStart = 1511269200;
 let dayKey = '20171121';
 
 let options = {
     txOffset: 0,
     txLimit: 50,
+};
+
+let counters = {
     txDay: 0,
     amountDay: 0,
     addresses: 0
 };
-
-let parameters = {
-    "limit": options.txLimit,
-    "offset": options.txOffset,
-    "orderBy": "height:asc"
-};
-
 
 // async function always returns a Promise
 async function syncInit(): Promise<void> {
     await scheduler.scheduleJob("*/5 * * * * *", () => {
 
     });
+
+    let parameters = {
+        "limit": options.txLimit,
+        "offset": options.txOffset,
+        "orderBy": "height:asc"
+    };
+
+    smartholdemApi.getTransactionsList(parameters, (error, success, response) => {
+        for (let i = 0; i < response.transactions.length; i++) {
+            if (response.transactions[i].amount > 0) {
+                let date = new Date((timeStart + response.transactions[i].timestamp) * 1000);
+                let ymd = date.getFullYear().toString() + (date.getMonth() + 1).toString() + date.getDate().toString();
+
+                if (dayKey !== ymd) {
+                    dayKey = ymd;
+                    counters.txDay = 0;
+                    counters.amountDay = 0;
+                }
+
+                counters.txDay = counters.txDay + response.blocks[i].numberOfTransactions;
+                counters.amountDay = counters.amountDay + (response.blocks[i].totalAmount / 10 ** 8)
+
+                console.log(date);
+                console.log(ymd);
+
+                db.put('0x100' + dayKey, {
+                    count: counters.txDay
+                });
+
+                db.put('0x200' + dayKey, {
+                    amount: counters.amountDay
+                });
+            }
+        }
+        options.txOffset = options.txOffset + options.txLimit;
+        console.log(response);
+
+        // save totalTxs
+        db.put('0x0', {
+            count: response.count
+        });
+    });
+
 }
-
-smartholdemApi.getTransactionsList(parameters, (error, success, response) => {
-    if (response.success) {
-
-    }
-    console.log(response.transactions);
-});
 
 export default class IndexController {
     public index(req: Request, res: Response, next: Function): void {
