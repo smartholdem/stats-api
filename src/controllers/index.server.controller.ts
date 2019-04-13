@@ -58,10 +58,15 @@ async function syncInit(): Promise<void> {
                     if (err) {
                         totalAddresses++;
                         counters.addrsDay++;
+                        // uniq addrs
                         db.put('0x1', {
                             addresses: totalAddresses
                         });
-                        // console.log('totalAddresses',totalAddresses);
+                        // addrs by day
+                        db.put('400x' + dayKey, {
+                            addresses: counters.addrsDay
+                        });
+                        // list uniq addrs
                         db.put('500x' + response.transactions[i].recipientId, {
                             timestamp: response.transactions[i].timestamp
                         })
@@ -70,7 +75,6 @@ async function syncInit(): Promise<void> {
 
                 counters.txDay++;
                 counters.amountDay = counters.amountDay + (response.transactions[i].amount / 10 ** 8);
-                // console.log(date);
 
                 db.put('100x' + dayKey, {
                     tx: counters.txDay
