@@ -24,7 +24,7 @@ async function syncInit(): Promise<void> {
     let totalAddresses = 0;
 
     let options = {
-        txOffset: 9750,
+        txOffset: 9900,
         txLimit: 50,
     };
 
@@ -34,7 +34,7 @@ async function syncInit(): Promise<void> {
         addrsDay: 0
     };
 
-    scheduler.scheduleJob("*/6 * * * * *", () => {
+    scheduler.scheduleJob("*/10 * * * * *", () => {
         let parameters = {
             "limit": options.txLimit,
             "offset": options.txOffset,
@@ -139,16 +139,13 @@ export default class IndexController {
     public getAmoutByDay(req: Request, res: Response): void {
         let list = [];
         let path = {
-            gte: "400x" + req.params["from"],
-            lt: "400x" + req.params["to"],
+            gte: "200x" + req.params["from"],
+            lt: "200x" + req.params["to"],
             limit: 5000
         };
         db.createReadStream(path)
             .on('data', function (data) {
-                list.push({
-                    value: data.value.amount,
-                    y: (req.params["from"]).substr(0,4)
-                });
+                list.push(data.value.amount);
             })
             .on('error', function (err) {
                 res.json(err);
