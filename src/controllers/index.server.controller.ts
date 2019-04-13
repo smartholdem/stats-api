@@ -9,30 +9,31 @@ const db = level('.db', {valueEncoding: 'json'});
 smartholdemApi.setPreferredNode("192.168.1.55");
 smartholdemApi.init("main"); //main or dev
 
-// 0x - total tx count, uniq addresses count
-// 1x - list uniq addresses
+// 0x0 - total tx count
+// 0x1 - total uniq addresses
 // 100x - tx count by day
 // 200x - amount transfer by day
 // 300x - price by day
 // 400x - addresses by day
-
-const timeStart = 1511269200;
-let dayKey = '20171121';
-let totalAddresses = 0;
-
-let options = {
-    txOffset: 0,
-    txLimit: 50,
-};
-
-let counters = {
-    txDay: 0,
-    amountDay: 0,
-    addrsDay: 0
-};
+// 500x - list uniq addresses
 
 // async function always returns a Promise
 async function syncInit(): Promise<void> {
+    const timeStart = 1511269200;
+    let dayKey = '20171121';
+    let totalAddresses = 0;
+
+    let options = {
+        txOffset: 0,
+        txLimit: 50,
+    };
+
+    let counters = {
+        txDay: 0,
+        amountDay: 0,
+        addrsDay: 0
+    };
+
     await scheduler.scheduleJob("*/5 * * * * *", () => {
 
     });
@@ -56,9 +57,13 @@ async function syncInit(): Promise<void> {
             }
 
             // verif addr
-            db.get('1x' + response.transactions[i].recipientId, function (err, value) {
+            db.get('500x' + response.transactions[i].recipientId, function (err, value) {
                 if (err) {
                     totalAddresses++;
+                    db.put('0x1', {
+                        addresses: totalAddresses
+                    });
+                    console.log('totalAddresses',totalAddresses);
                     db.put('1x' + response.transactions[i].recipientId, {
                         timestamp: response.transactions[i].timestamp
                     })
@@ -67,9 +72,7 @@ async function syncInit(): Promise<void> {
 
             counters.txDay++;
             counters.amountDay = counters.amountDay + (response.transactions[i].amount / 10 ** 8);
-
             console.log(date);
-            //console.log(ymd);
 
             db.put('100x' + dayKey, {
                 count: counters.txDay
@@ -84,9 +87,10 @@ async function syncInit(): Promise<void> {
 
         // save totalTxs
         db.put('0x0', {
-            tx: response.count,
-            addresses: totalAddresses
+            tx: response.count
         });
+
+        console.log(totalAddresses);
     });
 
 }
