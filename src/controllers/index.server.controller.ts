@@ -45,7 +45,10 @@ async function syncInit(): Promise<void> {
             if (success && response.success === true) {
                 for (let i = 0; i < response.transactions.length; i++) {
                     let date = new Date((timeStart + response.transactions[i].timestamp) * 1000);
-                    let ymd = date.getFullYear().toString() + (date.getMonth() + 1).toString() + date.getDate().toString();
+                    let y = date.getFullYear().toString();
+                    let m = (date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1).toString();
+                    let d = date.getDate() < 10 ? '0' + date.getDate() : date.getDate().toString();
+                    let ymd = y + m + d;
 
                     if (dayKey !== ymd) {
                         dayKey = ymd;
