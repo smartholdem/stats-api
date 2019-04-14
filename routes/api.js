@@ -144,31 +144,33 @@ class apiController {
                     list.push(data.value.tx);
                 })
                 .on('error', function (err) {
+                    reject(err);
+                })
+                .on('end', function () {
+                    resolve(list);
+                });
+        });
+    }
+
+    async getAmoutByDay(from, to) {
+        return new Promise((resolve, reject) => {
+            let list = [];
+            let path = {
+                gte: "200x" + from,
+                lt: "200x" + to,
+                limit: 5000
+            };
+            db.createReadStream(path)
+                .on('data', function (data) {
+                    list.push(data.value.amount);
+                })
+                .on('error', function (err) {
                     reject (err);
                 })
                 .on('end', function () {
                     resolve (list);
                 });
         });
-    }
-
-    async getAmoutByDay(from, to) {
-        let list = [];
-        let path = {
-            gte: "200x" + from,
-            lt: "200x" + to,
-            limit: 5000
-        };
-        db.createReadStream(path)
-            .on('data', function (data) {
-                list.push(data.value.amount);
-            })
-            .on('error', function (err) {
-                return (err);
-            })
-            .on('end', function () {
-                return (list);
-            });
     }
 
     async getAccountsByDay(from, to) {
