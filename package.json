@@ -12,6 +12,7 @@
     "hbs": "~4.0.1",
     "http-errors": "~1.6.2",
     "level": "^5.0.1",
-    "morgan": "~1.9.0"
+    "morgan": "~1.9.0",
+    "sthjs-wrapper": "^0.1.8"
   }
 }
