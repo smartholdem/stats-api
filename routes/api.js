@@ -59,6 +59,12 @@ async function syncInit() {
                         counters.txDay = 0;
                         counters.amountDay = 0;
                         counters.addrsDay = 0;
+                        db.put('100x' + ymd, {
+                            tx: 0
+                        });
+                        db.put('200x' + ymd, {
+                            amount: 0
+                        });
                         db.put('400x' + ymd, {
                             addresses: 0
                         });
