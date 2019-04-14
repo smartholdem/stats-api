@@ -54,11 +54,14 @@ async function syncInit() {
                     let ymd = y + m + d;
 
                     if (dayKey !== ymd) {
-                        console.log(ymd, counters.amountDay);
+                        console.log(ymd);
                         dayKey = ymd;
                         counters.txDay = 0;
                         counters.amountDay = 0;
                         counters.addrsDay = 0;
+                        db.put('400x' + ymd, {
+                            addresses: 0
+                        });
                     }
 
                     // verif addr
@@ -91,7 +94,7 @@ async function syncInit() {
                         tx: counters.txDay
                     });
 
-                    console.log((counters.amountDay).toPrecision(16));
+                    // console.log((counters.amountDay).toPrecision(16));
                     db.put('200x' + dayKey, {
                         amount: counters.amountDay
                     });
