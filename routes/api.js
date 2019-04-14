@@ -18,6 +18,7 @@ smartholdemApi.init("main"); //main or dev
 // 400x - addresses by day
 // 500x - list uniq addresses
 
+
 async function syncInit() {
     const timeStart = 1511269200;
     let dayKey = '20171121';
@@ -110,22 +111,24 @@ async function syncInit() {
 
 class apiController {
     async getDb(from, to) {
-        let list = {};
-        let path = {
-            gte: from + "x",
-            lt: to + "x",
-            limit: 5000
-        };
-        db.createReadStream(path)
-            .on('data', function (data) {
-                list[data.key] = data.value;
-            })
-            .on('error', function (err) {
-                return (err);
-            })
-            .on('end', function () {
-                return (list);
-            });
+        return new Promise((resolve, reject) => {
+            let list = {};
+            let path = {
+                gte: from + "x",
+                lt: to + "x",
+                limit: 5000
+            };
+            db.createReadStream(path)
+                .on('data', function (data) {
+                    list[data.key] = data.value;
+                })
+                .on('error', function (err) {
+                    reject(err);
+                })
+                .on('end', function () {
+                    resolve(list);
+                });
+        });
     }
 
     async getTxByDay(from, to) {
@@ -159,10 +162,10 @@ class apiController {
                 list.push(data.value.amount);
             })
             .on('error', function (err) {
-                return(err);
+                return (err);
             })
             .on('end', function () {
-                return(list);
+                return (list);
             });
     }
 
@@ -178,10 +181,10 @@ class apiController {
                 list.push(data.value.addresses);
             })
             .on('error', function (err) {
-                return(err);
+                return (err);
             })
             .on('end', function () {
-                return(list);
+                return (list);
             });
     }
 }
@@ -218,5 +221,7 @@ router.get('/accounts/days/:from/:to', function (req, res, next) {
     })
 });
 
+
+syncInit();
 
 module.exports = router;
