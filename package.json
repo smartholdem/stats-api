@@ -1,73 +1,17 @@
 {
-  "name": "stats-api",
-  "version": "0.0.2",
-  "description": "SmartHoldem Stats API",
+  "name": "smartholdem-stats-api",
+  "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently --kill-others \"tsc -w -p src\" \"nodemon dist/index.js -e ts\"",
-    "serve": "concurrently --kill-others \"tsc -p src\" \"node dist/index.js\"",
-    "debug": "concurrently --kill-others \"tsc -w -p src\" \"nodemon --inspect dist/index.js -e ts\"",
-    "test:watch": "mocha -r ts-node/register -w ./spec/**/*.spec.ts --watch-extensions ts",
-    "test": "mocha -r ts-node/register -w ./spec/**/*.spec.ts",
-    "build": "tsc -p src",
-    "start": "node dist/index.js",
-    "build:docker": "docker build -t rjmacarthy/stats-api .",
-    "docker:compose": "docker-compose up"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/smartholdem/stats-api.git"
-  },
-  "keywords": [
-    "crypto",
-    "sth",
-    "coins"
-  ],
-  "author": "TechnoL0g",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/smartholdem/stats-api/issues"
+    "start": "node ./bin/www"
   },
   "dependencies": {
-    "body-parser": "^1.13.3",
-    "cookie-parser": "~1.3.5",
-    "cross-env": "^5.1.5",
-    "debug": "^4.0.1",
-    "express": "^4.13.4",
-    "fresh": "^0.5.2",
-    "glob": "^5.0.14",
-    "jsonfile": "^5.0.0",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9",
+    "express": "~4.16.0",
+    "hbs": "~4.0.1",
+    "http-errors": "~1.6.2",
     "level": "^5.0.1",
-    "leveldown": "^5.0.1",
-    "levelup": "^4.0.1",
-    "lodash": "^4.17.11",
-    "mongoose": "^4.11.1",
-    "morgan": "^1.6.1",
-    "negotiator": "^0.6.1",
-    "node-schedule": "^1.3.2",
-    "pug": "^2.0.3",
-    "serve-favicon": "^2.5.0",
-    "socket.io": "^2.2.0",
-    "sthjs-wrapper": "^0.1.8"
-  },
-  "devDependencies": {
-    "@types/chai": "^4.1.3",
-    "@types/cookie-parser": "^1.4.1",
-    "@types/express": "^4.0.36",
-    "@types/lodash": "^4.14.68",
-    "@types/mocha": "^5.2.0",
-    "@types/mongoose": "^4.7.18",
-    "@types/node": "^8.0.9",
-    "@types/sinon": "^4.3.3",
-    "@types/socket.io": "^2.1.2",
-    "chai": "^4.1.2",
-    "concurrently": "^3.5.0",
-    "mocha": "^5.1.1",
-    "node-mocks-http": "^1.7.0",
-    "nodemon": "^1.17.4",
-    "sinon": "^5.0.7",
-    "ts-node": "^6.0.3",
-    "typescript": "^2.4.1"
-  },
-  "homepage": "https://github.com/smartholdem"
+    "morgan": "~1.9.0"
+  }
 }
