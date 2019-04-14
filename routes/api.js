@@ -127,6 +127,25 @@ class apiController {
                 return (list);
             });
     }
+
+    async getTxByDay(from, to) {
+        let list = [];
+        let path = {
+            gte: "100x" + from,
+            lt: "100x" + to,
+            limit: 5000
+        };
+        db.createReadStream(path)
+            .on('data', function (data) {
+                list.push(data.value.tx);
+            })
+            .on('error', function (err) {
+                return(err);
+            })
+            .on('end', function () {
+                return(list);
+            });
+    }
 }
 
 
@@ -139,6 +158,12 @@ router.get('/', function (req, res, next) {
 
 router.get('/data/:from/:to', function (req, res, next) {
     API.getDb(req.params["from"], req.params["to"]).then(function (data) {
+        res.json(data);
+    })
+});
+
+router.get('/tx/days/:from/:to', function (req, res, next) {
+    API.getTxByDay(req.params["from"], req.params["to"]).then(function (data) {
         res.json(data);
     })
 });
