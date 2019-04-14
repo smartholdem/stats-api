@@ -165,6 +165,25 @@ class apiController {
                 return(list);
             });
     }
+
+    async getAccountsByDay(from, to) {
+        let list = [];
+        let path = {
+            gte: "400x" + from,
+            lt: "400x" + to,
+            limit: 5000
+        };
+        db.createReadStream(path)
+            .on('data', function (data) {
+                list.push(data.value.addresses);
+            })
+            .on('error', function (err) {
+                return(err);
+            })
+            .on('end', function () {
+                return(list);
+            });
+    }
 }
 
 
@@ -192,5 +211,12 @@ router.get('/amount/days/:from/:to', function (req, res, next) {
         res.json(data);
     })
 });
+
+router.get('/accounts/days/:from/:to', function (req, res, next) {
+    API.getAccountsByDay(req.params["from"], req.params["to"]).then(function (data) {
+        res.json(data);
+    })
+});
+
 
 module.exports = router;
