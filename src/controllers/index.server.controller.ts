@@ -62,14 +62,17 @@ async function syncInit(): Promise<void> {
                         if (err) {
                             totalAddresses++;
                             counters.addrsDay++;
+
                             // uniq addrs
                             db.put('0x1', {
                                 addresses: totalAddresses
                             });
+
                             // addrs by day
                             db.put('400x' + dayKey, {
                                 addresses: counters.addrsDay
                             });
+
                             // list uniq addrs
                             db.put('500x' + response.transactions[i].recipientId, {
                                 timestamp: response.transactions[i].timestamp
