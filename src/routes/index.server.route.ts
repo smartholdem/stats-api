@@ -15,5 +15,7 @@ export default class IndexRoute {
 			.get(indexController.getAmoutByDay);
 		app.route('/txdays/:from/:to')
 			.get(indexController.getTxByDay);
+		app.route('/addrdays/:from/:to')
+			.get(indexController.getAddrsByDay);
 	}
 }
