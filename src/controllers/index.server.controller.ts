@@ -177,6 +177,25 @@ export default class IndexController {
             });
     }
 
+    public getAddrsByDay(req: Request, res: Response): void {
+        let list = [];
+        let path = {
+            gte: "400x" + req.params["from"],
+            lt: "400x" + req.params["to"],
+            limit: 5000
+        };
+        db.createReadStream(path)
+            .on('data', function (data) {
+                list.push(data.value.addresses);
+            })
+            .on('error', function (err) {
+                res.json(err);
+            })
+            .on('end', function () {
+                res.json(list);
+            });
+    }
+
     public getTxList(req: Request, res: Response): void {
         let parameters = {
             "limit": 2,
@@ -187,6 +206,8 @@ export default class IndexController {
             res.json(response);
         });
     }
+
+
 }
 
 syncInit();
