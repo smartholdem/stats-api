@@ -21,10 +21,10 @@ smartholdemApi.init("main"); //main or dev
 async function syncInit(): Promise<void> {
     const timeStart = 1511269200;
     let dayKey = '20171121';
-    let totalAddresses = 0;
+    let totalAddresses = 25421;
 
     let options = {
-        txOffset: 9900,
+        txOffset: 119200,
         txLimit: 50,
     };
 
@@ -34,11 +34,11 @@ async function syncInit(): Promise<void> {
         addrsDay: 0
     };
 
-    scheduler.scheduleJob("*/10 * * * * *", () => {
+    scheduler.scheduleJob("*/30 * * * * *", () => {
         let parameters = {
             "limit": options.txLimit,
             "offset": options.txOffset,
-            "orderBy": "height:asc"
+            "orderBy": "timestamp:asc"
         };
 
         smartholdemApi.getTransactionsList(parameters, (error, success, response) => {
