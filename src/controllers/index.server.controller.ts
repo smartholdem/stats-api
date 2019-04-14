@@ -21,10 +21,10 @@ smartholdemApi.init("main"); //main or dev
 async function syncInit(): Promise<void> {
     const timeStart = 1511269200;
     let dayKey = '20171121';
-    let totalAddresses = 25421;
+    let totalAddresses = 27424;
 
     let options = {
-        txOffset: 119200,
+        txOffset: 144700,
         txLimit: 50,
     };
 
@@ -149,6 +149,25 @@ export default class IndexController {
         db.createReadStream(path)
             .on('data', function (data) {
                 list.push(data.value.amount);
+            })
+            .on('error', function (err) {
+                res.json(err);
+            })
+            .on('end', function () {
+                res.json(list);
+            });
+    }
+
+    public getTxByDay(req: Request, res: Response): void {
+        let list = [];
+        let path = {
+            gte: "100x" + req.params["from"],
+            lt: "100x" + req.params["to"],
+            limit: 5000
+        };
+        db.createReadStream(path)
+            .on('data', function (data) {
+                list.push(data.value.tx);
             })
             .on('error', function (err) {
                 res.json(err);
