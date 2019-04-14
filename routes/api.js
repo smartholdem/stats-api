@@ -7,7 +7,7 @@ const scheduler = require('node-schedule');
 const db = level('.db', {valueEncoding: 'json'});
 
 /**  SmartHoldem API init **/
-smartholdemApi.setPreferredNode("192.168.1.55");
+smartholdemApi.setPreferredNode("194.182.74.218");
 smartholdemApi.init("main"); //main or dev
 
 
@@ -37,7 +37,7 @@ let counters = {
 
 async function syncInit() {
 
-    scheduler.scheduleJob("*/20 * * * * *", () => {
+    scheduler.scheduleJob("*/30 * * * * *", () => {
         let parameters = {
             "limit": options.txLimit,
             "offset": options.txOffset,
