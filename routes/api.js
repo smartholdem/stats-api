@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const smartholdemApi = require('sthjs-wrapper');
 const level = require('level');
+const jsonReader = require('jsonfile');
 const scheduler = require('node-schedule');
 const db = level('.db', {valueEncoding: 'json'});
 
@@ -18,24 +19,25 @@ smartholdemApi.init("main"); //main or dev
 // 400x - addresses by day
 // 500x - list uniq addresses
 
+const timeStart = 1511269200;
+let dayKey = '20171121';
+let totalAddresses = jsonReader.readFileSync('./count.json').addresses;
+
+let options = {
+    txOffset: jsonReader.readFileSync('./count.json').offset,
+    txLimit: 50,
+};
+
+let counters = {
+    txDay: 0,
+    amountDay: 0,
+    addrsDay: 0
+};
+
 
 async function syncInit() {
-    const timeStart = 1511269200;
-    let dayKey = '20171121';
-    let totalAddresses = 27893;
 
-    let options = {
-        txOffset: 148650,
-        txLimit: 50,
-    };
-
-    let counters = {
-        txDay: 0,
-        amountDay: 0,
-        addrsDay: 0
-    };
-
-    scheduler.scheduleJob("*/30 * * * * *", () => {
+    scheduler.scheduleJob("*/20 * * * * *", () => {
         let parameters = {
             "limit": options.txLimit,
             "offset": options.txOffset,
@@ -52,7 +54,7 @@ async function syncInit() {
                     let ymd = y + m + d;
 
                     if (dayKey !== ymd) {
-                        console.log(ymd);
+                        console.log(ymd, counters.amountDay);
                         dayKey = ymd;
                         counters.txDay = 0;
                         counters.amountDay = 0;
@@ -83,12 +85,13 @@ async function syncInit() {
                     });
 
                     counters.txDay++;
-                    counters.amountDay = counters.amountDay + (response.transactions[i].amount / 10 ** 8);
+                    counters.amountDay = (counters.amountDay + (response.transactions[i].amount / 10 ** 8));
 
                     db.put('100x' + dayKey, {
                         tx: counters.txDay
                     });
 
+                    console.log((counters.amountDay).toPrecision(16));
                     db.put('200x' + dayKey, {
                         amount: counters.amountDay
                     });
@@ -96,10 +99,18 @@ async function syncInit() {
                 }
                 options.txOffset = options.txOffset + options.txLimit;
                 console.log('offset', options.txOffset);
+                console.log('totalAddresses', totalAddresses);
+
+                jsonReader.writeFile('./count.json', {
+                    "offset": options.txOffset,
+                    "addresses": totalAddresses
+                });
+
 
                 // save totalTxs
                 db.put('0x0', {
-                    tx: response.count
+                    tx: response.count,
+                    offset: options.txOffset
                 });
             } else {
                 console.log('err', error);
