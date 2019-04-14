@@ -140,6 +140,25 @@ class apiController {
                 list.push(data.value.tx);
             })
             .on('error', function (err) {
+                return (err);
+            })
+            .on('end', function () {
+                return (list);
+            });
+    }
+
+    async getAmoutByDay(from, to) {
+        let list = [];
+        let path = {
+            gte: "200x" + from,
+            lt: "200x" + to,
+            limit: 5000
+        };
+        db.createReadStream(path)
+            .on('data', function (data) {
+                list.push(data.value.amount);
+            })
+            .on('error', function (err) {
                 return(err);
             })
             .on('end', function () {
@@ -164,6 +183,12 @@ router.get('/data/:from/:to', function (req, res, next) {
 
 router.get('/tx/days/:from/:to', function (req, res, next) {
     API.getTxByDay(req.params["from"], req.params["to"]).then(function (data) {
+        res.json(data);
+    })
+});
+
+router.get('/amount/days/:from/:to', function (req, res, next) {
+    API.getAmoutByDay(req.params["from"], req.params["to"]).then(function (data) {
         res.json(data);
     })
 });
