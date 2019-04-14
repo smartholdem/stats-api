@@ -132,22 +132,24 @@ class apiController {
     }
 
     async getTxByDay(from, to) {
-        let list = [];
-        let path = {
-            gte: "100x" + from,
-            lt: "100x" + to,
-            limit: 5000
-        };
-        db.createReadStream(path)
-            .on('data', function (data) {
-                list.push(data.value.tx);
-            })
-            .on('error', function (err) {
-                return (err);
-            })
-            .on('end', function () {
-                return (list);
-            });
+        return new Promise((resolve, reject) => {
+            let list = [];
+            let path = {
+                gte: "100x" + from,
+                lt: "100x" + to,
+                limit: 5000
+            };
+            db.createReadStream(path)
+                .on('data', function (data) {
+                    list.push(data.value.tx);
+                })
+                .on('error', function (err) {
+                    reject (err);
+                })
+                .on('end', function () {
+                    resolve (list);
+                });
+        });
     }
 
     async getAmoutByDay(from, to) {
