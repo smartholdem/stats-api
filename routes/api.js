@@ -165,31 +165,33 @@ class apiController {
                     list.push(data.value.amount);
                 })
                 .on('error', function (err) {
-                    reject (err);
+                    reject(err);
                 })
                 .on('end', function () {
-                    resolve (list);
+                    resolve(list);
                 });
         });
     }
 
     async getAccountsByDay(from, to) {
-        let list = [];
-        let path = {
-            gte: "400x" + from,
-            lt: "400x" + to,
-            limit: 5000
-        };
-        db.createReadStream(path)
-            .on('data', function (data) {
-                list.push(data.value.addresses);
-            })
-            .on('error', function (err) {
-                return (err);
-            })
-            .on('end', function () {
-                return (list);
-            });
+        return new Promise((resolve, reject) => {
+            let list = [];
+            let path = {
+                gte: "400x" + from,
+                lt: "400x" + to,
+                limit: 5000
+            };
+            db.createReadStream(path)
+                .on('data', function (data) {
+                    list.push(data.value.addresses);
+                })
+                .on('error', function (err) {
+                    reject(err);
+                })
+                .on('end', function () {
+                    resolve(list);
+                });
+        });
     }
 }
 
