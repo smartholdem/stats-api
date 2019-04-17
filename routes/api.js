@@ -37,7 +37,7 @@ let counters = {
 
 async function syncInit() {
 
-    scheduler.scheduleJob("*/30 * * * * *", () => {
+    scheduler.scheduleJob("1 */10 * * * *", () => {
         let parameters = {
             "limit": options.txLimit,
             "offset": options.txOffset,
