@@ -46,81 +46,82 @@ async function syncInit() {
 
         smartholdemApi.getTransactionsList(parameters, (error, success, response) => {
             if (success && response.success === true) {
-                for (let i = 0; i < response.transactions.length; i++) {
-                    let date = new Date((timeStart + response.transactions[i].timestamp) * 1000);
-                    let y = date.getFullYear().toString();
-                    let m = (date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1).toString();
-                    let d = date.getDate() < 10 ? '0' + date.getDate() : date.getDate().toString();
-                    let ymd = y + m + d;
+                if (response.transactions.length > 0) {
+                    for (let i = 0; i < response.transactions.length; i++) {
+                        let date = new Date((timeStart + response.transactions[i].timestamp) * 1000);
+                        let y = date.getFullYear().toString();
+                        let m = (date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1).toString();
+                        let d = date.getDate() < 10 ? '0' + date.getDate() : date.getDate().toString();
+                        let ymd = y + m + d;
 
-                    if (dayKey !== ymd) {
-                        console.log(ymd);
-                        dayKey = ymd;
-                        counters.txDay = 0;
-                        counters.amountDay = 0;
-                        counters.addrsDay = 0;
-                        db.put('100x' + ymd, {
-                            tx: 0
-                        });
-                        db.put('200x' + ymd, {
-                            amount: 0
-                        });
-                        db.put('400x' + ymd, {
-                            addresses: 0
-                        });
-                    }
-
-                    // verif addr
-                    db.get('500x' + response.transactions[i].recipientId, function (err, value) {
-                        if (err) {
-                            totalAddresses++;
-                            counters.addrsDay++;
-
-                            // uniq addrs
-                            db.put('0x1', {
-                                addresses: totalAddresses
+                        if (dayKey !== ymd) {
+                            console.log(ymd);
+                            dayKey = ymd;
+                            counters.txDay = 0;
+                            counters.amountDay = 0;
+                            counters.addrsDay = 0;
+                            db.put('100x' + ymd, {
+                                tx: 0
                             });
-
-                            // addrs by day
-                            db.put('400x' + dayKey, {
-                                addresses: counters.addrsDay
+                            db.put('200x' + ymd, {
+                                amount: 0
                             });
-
-                            // list uniq addrs
-                            db.put('500x' + response.transactions[i].recipientId, {
-                                timestamp: response.transactions[i].timestamp
-                            })
+                            db.put('400x' + ymd, {
+                                addresses: 0
+                            });
                         }
+
+                        // verif addr
+                        db.get('500x' + response.transactions[i].recipientId, function (err, value) {
+                            if (err) {
+                                totalAddresses++;
+                                counters.addrsDay++;
+
+                                // uniq addrs
+                                db.put('0x1', {
+                                    addresses: totalAddresses
+                                });
+
+                                // addrs by day
+                                db.put('400x' + dayKey, {
+                                    addresses: counters.addrsDay
+                                });
+
+                                // list uniq addrs
+                                db.put('500x' + response.transactions[i].recipientId, {
+                                    timestamp: response.transactions[i].timestamp
+                                })
+                            }
+                        });
+
+                        counters.txDay++;
+                        counters.amountDay = (counters.amountDay + (response.transactions[i].amount / 10 ** 8));
+
+                        db.put('100x' + dayKey, {
+                            tx: counters.txDay
+                        });
+
+                        // console.log((counters.amountDay).toPrecision(16));
+                        db.put('200x' + dayKey, {
+                            amount: counters.amountDay
+                        });
+
+                    }
+                    options.txOffset = options.txOffset + options.txLimit;
+                    console.log('offset', options.txOffset);
+                    console.log('totalAddresses', totalAddresses);
+
+                    jsonReader.writeFile('./count.json', {
+                        "offset": options.txOffset,
+                        "addresses": totalAddresses
                     });
 
-                    counters.txDay++;
-                    counters.amountDay = (counters.amountDay + (response.transactions[i].amount / 10 ** 8));
-
-                    db.put('100x' + dayKey, {
-                        tx: counters.txDay
+                    // save totalTxs
+                    db.put('0x0', {
+                        tx: response.count,
+                        offset: options.txOffset
                     });
-
-                    // console.log((counters.amountDay).toPrecision(16));
-                    db.put('200x' + dayKey, {
-                        amount: counters.amountDay
-                    });
-
                 }
-                options.txOffset = options.txOffset + options.txLimit;
-                console.log('offset', options.txOffset);
-                console.log('totalAddresses', totalAddresses);
-
-                jsonReader.writeFile('./count.json', {
-                    "offset": options.txOffset,
-                    "addresses": totalAddresses
-                });
-
-
-                // save totalTxs
-                db.put('0x0', {
-                    tx: response.count,
-                    offset: options.txOffset
-                });
             } else {
                 console.log('err', error);
             }
