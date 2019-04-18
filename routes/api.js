@@ -37,7 +37,7 @@ let counters = {
 
 async function syncInit() {
 
-    scheduler.scheduleJob("1 */10 * * * *", () => {
+    scheduler.scheduleJob("1 */5 * * * *", () => {
         let parameters = {
             "limit": options.txLimit,
             "offset": options.txOffset,
@@ -107,7 +107,13 @@ async function syncInit() {
                         });
 
                     }
-                    options.txOffset = options.txOffset + options.txLimit;
+
+                    if (response.transactions.length < 50) {
+                        options.txOffset = options.txOffset + response.transactions.length;
+                    } else {
+                        options.txOffset = options.txOffset + options.txLimit;
+                    }
+
                     console.log('offset', options.txOffset);
                     console.log('totalAddresses', totalAddresses);
 
